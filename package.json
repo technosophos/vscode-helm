@@ -1,0 +1,70 @@
+{
+    "name": "vscode-helm",
+    "displayName": "vscode-helm",
+    "description": "Chart development tools for Kubernetes Helm",
+    "version": "0.0.1",
+    "publisher": "technosophos",
+    "engines": {
+        "vscode": "^1.11.0"
+    },
+    "categories": [
+        "Languages",
+        "Snippets",
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.helmTemplate",
+        "onCommand:extension.helmLint",
+        "onCommand:extension.helmVersion"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.helmVersion",
+                "title": "Helm Version (Client)"
+            },
+            {
+                "command": "extension.helmLint",
+                "title": "Helm Lint"
+            },
+            {
+                "command": "extension.helmTemplate",
+                "title": "Helm Template"
+            }
+        ],
+        "languages": [{
+            "id": "helm",
+            "aliases": ["helm-template", "helm"],
+            "extensions": [".yaml",".tpl"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "helm",
+            "scopeName": "source.helm",
+            "path": "./syntaxes/helm.tmLanguage.json"
+        }],
+        "snippets": [
+            {
+                "language": "helm",
+                "path": "./snippets/helm.json"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "tsc -p ./",
+        "compile": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.0.3",
+        "vscode": "^1.0.0",
+        "mocha": "^2.3.3",
+        "@types/node": "^6.0.40",
+        "@types/mocha": "^2.2.32"
+    },
+    "dependencies": {
+        "shelljs":"0.7.7"
+    }
+}
