@@ -24,6 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('extension.helmVersion', helmVersion),
         vscode.commands.registerCommand('extension.helmTemplate', helmTemplate),
         vscode.commands.registerCommand('extension.helmLint', helmLint),
+        vscode.commands.registerCommand('extension.helmDryRun', helmDryRun),
         //vscode.commands.registerCommand("extension.showYamlPreview", showYamlPreview)
     ]    
 
@@ -63,6 +64,7 @@ function helmTemplate() {
     })
 }
 
+// helmLint runs the Helm linter on a chart within your project.
 function helmLint() {
     pickChart(path => {
         logger.log("⎈⎈⎈ Linting " + path)
@@ -71,6 +73,20 @@ function helmLint() {
             logger.log(err)
             if (code != 0) {
                 logger.log("⎈⎈⎈ LINTING FAILED")
+            }
+        })
+    })
+}
+
+// helmDryRun runs a helm install with --dry-run and --debug set.
+function helmDryRun() {
+    pickChart(path => {
+        logger.log("⎈⎈⎈ Installing (dry-run) " + path)
+        helmExec("install --dry-run --debug "+ path, (code, out, err) => {
+            logger.log(out)
+            logger.log(err)
+            if (code != 0) {
+                logger.log("⎈⎈⎈ INSTALL FAILED")
             }
         })
     })

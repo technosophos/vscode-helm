@@ -15,6 +15,7 @@
     "activationEvents": [
         "onCommand:extension.helmTemplate",
         "onCommand:extension.helmLint",
+        "onCommand:extension.helmDryRun",
         "onCommand:extension.helmVersion"
     ],
     "main": "./out/src/extension",
@@ -27,6 +28,10 @@
             {
                 "command": "extension.helmLint",
                 "title": "Helm Lint"
+            },
+            {
+                "command": "extension.helmDryRun",
+                "title": "Helm Dry Run"
             },
             {
                 "command": "extension.helmTemplate",
