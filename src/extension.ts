@@ -9,6 +9,9 @@ import * as filepath from 'path';
 const HelmChannel = "Helm"
 var logger;
 
+// Hover provider
+export const HELM_MODE: vscode.DocumentFilter = { language: "helm", scheme: "file" }
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -18,15 +21,43 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "vscode-helm" is now active!');
     logger = new HelmConsole(HelmChannel)
     context.subscriptions.push(logger)
+    let provider = new HelmTemplatePrieviewDocumentProvider()
 
     // Commands
     let disposable = [
         vscode.commands.registerCommand('extension.helmVersion', helmVersion),
         vscode.commands.registerCommand('extension.helmTemplate', helmTemplate),
+        vscode.commands.registerCommand('extension.helmTemplatePreview', helmTemplatePreview),
         vscode.commands.registerCommand('extension.helmLint', helmLint),
         vscode.commands.registerCommand('extension.helmDryRun', helmDryRun),
+
         //vscode.commands.registerCommand("extension.showYamlPreview", showYamlPreview)
-    ]    
+
+        vscode.languages.registerHoverProvider(HELM_MODE, new HelmTemplateHoverProvider()),
+
+        // Register helm template preview
+        vscode.workspace.registerTextDocumentContentProvider("helm-template-preview", provider)
+    ]
+
+    // On save, refresh the YAML preview.
+    vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
+		if (e === vscode.window.activeTextEditor.document) {
+            pickChartForFile(vscode.window.activeTextEditor.document.fileName, chartPath => {
+                let u = vscode.Uri.parse("helm-template-preview://" + chartPath);
+                provider.update(u);
+            })
+			
+		}
+	});
+    // On editor change, refresh the YAML preview
+    vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor) => {
+        if (e.document === vscode.window.activeTextEditor.document) {
+            pickChartForFile(vscode.window.activeTextEditor.document.fileName, chartPath => {
+                let u = vscode.Uri.parse("helm-template-preview://" + chartPath);
+                provider.update(u);
+            })
+		}
+    })
 
     disposable.forEach(function(item){
         context.subscriptions.push(item);
@@ -62,6 +93,22 @@ function helmTemplate() {
             logger.log(out)
         })
     })
+}
+
+function helmTemplatePreview() {
+    let editor = vscode.window.activeTextEditor
+    if (!editor) {
+        vscode.window.showInformationMessage("No active editor.")
+        return
+    }
+
+    let filePath = editor.document.fileName
+    pickChartForFile(filePath, path => {
+        let reltpl = filepath.relative(path, filePath)
+        let u = vscode.Uri.parse("helm-template-preview://" + path)
+        vscode.commands.executeCommand("vscode.previewHtml", u, vscode.ViewColumn.Two, "View YAML")
+    })
+
 }
 
 // helmLint runs the Helm linter on a chart within your project.
@@ -125,11 +172,61 @@ function pickChart(fn) {
     })
 }
 
+// Given a file, show any charts that this file belongs to.
+function pickChartForFile(file: string, fn) {
+    vscode.workspace.findFiles("**/Chart.yaml", "", 10).then(matches => {
+        switch(matches.length) {
+            case 0:
+                vscode.window.showErrorMessage("No charts found")
+                return
+            case 1:
+                // Assume that if there is only one chart, that's the one to run.
+                let p = filepath.dirname(matches[0].fsPath)
+                fn(p)
+                return
+            default:
+                var paths = []
+
+                matches.forEach(item => {
+                    let dirname = filepath.dirname(item.fsPath)
+                    let rel = filepath.relative(dirname, file)
+
+                    // If the present file is not in a subdirectory of the parent chart, skip the chart.
+                    if (rel.indexOf("..") >= 0) {
+                        return
+                    }
+
+                    paths.push(
+                        filepath.relative(vscode.workspace.rootPath, filepath.dirname(item.fsPath))
+                    )
+                })
+
+                if (paths.length == 0) {
+                    vscode.window.showErrorMessage("No charts found containing " + file)
+                    return
+                }
+
+                // For now, let's go with the top-most path (umbrella chart)
+                if (paths.length >= 1) {
+                    fn(filepath.join(vscode.workspace.rootPath, paths[0]))
+                    return
+                }
+
+                /*
+                vscode.window.showQuickPick(paths).then( picked => {
+                    fn(filepath.join(vscode.workspace.rootPath, picked))
+                })
+                */
+                return
+        }
+    })
+}
+
 // helmExec appends 'args' to a Helm command (helm args...), executes it, and then sends the result to te callback.
 // fn should take the signature function(code, stdout, stderr)
 //
 // This will abort and send an error message if Helm is not installed.
-function helmExec(args, fn) {
+function helmExec(args: string, fn) {
     try {
         ensureHelm()
     } catch (e) {
@@ -141,7 +238,7 @@ function helmExec(args, fn) {
 }
 
 // isHelmChart tests whether the given path has a Chart.yaml file
-function isHelmChart(path) {
+function isHelmChart(path: string): boolean {
     return shell.test("-e", path + "/Chart.yaml")
 }
 
@@ -166,4 +263,64 @@ class HelmConsole implements vscode.Disposable {
     dispose() {
         this.chan.dispose()
     }
+}
+
+// Provide hover support
+export class HelmTemplateHoverProvider implements vscode.HoverProvider {
+    public provideHover(doc: vscode.TextDocument, pos: vscode.Position, tok: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover> {
+        let wordRange = doc.getWordRangeAtPosition(pos)
+        let lineText = doc.lineAt(pos.line).text
+        return new vscode.Hover(lineText)
+    }
+
+    inAction(doc: vscode.TextDocument, pos: vscode.Position): boolean {
+        let lineText = doc.lineAt(pos.line).text
+        // TODO: Scan whether we are inside of a {{...}} action
+        return false
+    }
+}
+// Provide an HTML-formatted preview window.
+class HelmTemplatePrieviewDocumentProvider implements vscode.TextDocumentContentProvider {
+    private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
+    
+    get onDidChange(): vscode.Event<vscode.Uri> {
+        return this._onDidChange.event
+    }
+
+    public update(uri: vscode.Uri) {
+		this._onDidChange.fire(uri);
+	}
+
+    public provideTextDocumentContent(uri: vscode.Uri, tok: vscode.CancellationToken): vscode.ProviderResult<string> {
+        return new Promise<string>((resolve, reject) => {
+            console.log("provideTextDocumentContent called with uri " + uri.toString())
+            let editor = vscode.window.activeTextEditor
+            if (!editor) {
+                reject("No active editor")
+                return
+            }
+
+            let filePath = editor.document.fileName
+            let chartPath = uri.fsPath
+            let prevWin = this
+            let reltpl = filepath.relative(filepath.dirname(chartPath), filePath)
+            console.log("templating " + reltpl)
+            helmExec("template " + chartPath + " --execute " + reltpl, (code, out, err) => {
+                if (code != 0) {
+                    resolve(previewBody("Chart Preview", "Failed template call." + err, true))
+                    return
+                }
+                resolve(previewBody("Template: " + reltpl, out))
+            })
+            return
+        })
+        
+    }
+    private content(rawData: string): string {
+        return "<body><pre>" + rawData + "</pre></body>"
+    }
+}
+
+function previewBody(title: string, data: string, err?: boolean): string {
+    return "<body><h1>" + title + "</h1><pre>" + data + "</pre></body>"
 }

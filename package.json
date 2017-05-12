@@ -14,6 +14,7 @@
     ],
     "activationEvents": [
         "onCommand:extension.helmTemplate",
+        "onCommand:extension.helmTemplatePreview",
         "onCommand:extension.helmLint",
         "onCommand:extension.helmDryRun",
         "onCommand:extension.helmVersion"
@@ -23,19 +24,28 @@
         "commands": [
             {
                 "command": "extension.helmVersion",
-                "title": "Helm Version (Client)"
+                "title": "Helm: Version (Client)",
+                "description": "Get the version of the local Helm client."
             },
             {
                 "command": "extension.helmLint",
-                "title": "Helm Lint"
+                "title": "Helm: Lint",
+                "description": "Run the linter on this chart."
             },
             {
                 "command": "extension.helmDryRun",
-                "title": "Helm Dry Run"
+                "title": "Helm: Dry Run",
+                "description": "Run 'helm install --dry-run --debug' on this chart."
             },
             {
                 "command": "extension.helmTemplate",
-                "title": "Helm Template"
+                "title": "Helm: Template",
+                "description": "Run 'helm template' on this chart. Requires the helm-template plugin."
+            },
+            {
+                "command": "extension.helmTemplatePreview",
+                "title": "Helm: Preview Template",
+                "description": "Run 'helm template' on this chart and show only this file. Requires the helm-template plugin."
             }
         ],
         "languages": [{
