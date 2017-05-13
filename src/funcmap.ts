@@ -12,6 +12,9 @@ export class FuncMap {
             this.f("toYaml", "toYaml $var", "convert $var to YAML"),
             this.f("toJson", "toJson $var", "convert $var to JSON"),
             this.f("toToml", "toToml $var", "convert $var to TOML"),
+            this.f("fromYaml", "fromYaml $str", "parse YAML into a dict or list"),
+            this.f("fromJson", "fromJson $str", "parse JSON $str into a dict or list"),
+            this.f("required", "required $val", "fail template if $val is not provided or is empty"),
         ]
     }
 
