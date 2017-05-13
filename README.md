@@ -2,9 +2,13 @@
 
 This Visual Studio Code extension provides [Kubernetes Helm](http://helm.sh) chart developers with a set of tools for creating and testing charts.
 
+![screenshot of Helm extension](./screenshot.png)
+
 ## Features
 
 - Syntax highlighting for YAML + Helm Templates
+- Autocomplete for Helm, Sprig, and Go Tpl functions5
+- Help text (on hover) for Helm, Sprig, and Go Tpl functions
 - Snippets for quickly scaffolding new chart templates
 - Commands for..
   - **Helm: Lint**: Lint your chart
@@ -21,6 +25,9 @@ You must have [Helm](http://helm.sh) installed and configured. From there, you s
 $ helm plugin install https://github.com/technosophos/helm-template
 ```
 
+It is recommended that you also install `kubectl`, though this extension does not directly use it yet.
+
+To use **Helm: DryRun** you must have your Kubernetes cluster running Tiller, and `$KUBECONFIG` pointing to that cluster. 
 
 ## Extension Settings
 
@@ -28,7 +35,8 @@ $ helm plugin install https://github.com/technosophos/helm-template
 
 ## Known Issues
 
-This extension has not been thoroughly tested on Windows.
+- This extension has not been thoroughly tested on Windows.
+- For deeply nested charts, template previews are generated against highest (umbrella) chart values (though for Helm Template calls you can pick your chart)
 
 ## Release Notes
 
