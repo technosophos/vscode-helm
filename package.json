@@ -17,7 +17,8 @@
         "onCommand:extension.helmTemplatePreview",
         "onCommand:extension.helmLint",
         "onCommand:extension.helmDryRun",
-        "onCommand:extension.helmVersion"
+        "onCommand:extension.helmVersion",
+        "onLanguage:helm"
     ],
     "main": "./out/src/extension",
     "contributes": {
