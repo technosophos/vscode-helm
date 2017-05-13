@@ -303,7 +303,7 @@ export class HelmTemplateHoverProvider implements vscode.HoverProvider {
         return Promise.resolve(null)
     }
 
-    inAction(doc: vscode.TextDocument, pos: vscode.Position, word: string): boolean {
+    private inAction(doc: vscode.TextDocument, pos: vscode.Position, word: string): boolean {
         let lineText = doc.lineAt(pos.line).text
         let r = new RegExp("{{[^}]*\\s("+word+")\\s[^{]*}}")
         return r.test(lineText)

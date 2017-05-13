@@ -8,14 +8,35 @@ export class FuncMap {
 
     public helmFuncs(): vscode.CompletionItem[] {
         return [
-            this.f("include", "include $str $ctx", "(chainable) include the named template with the given context.")
+            this.f("include", "include $str $ctx", "(chainable) include the named template with the given context."),
+            this.f("toYaml", "toYaml $var", "convert $var to YAML"),
+            this.f("toJson", "toJson $var", "convert $var to JSON"),
+            this.f("toToml", "toToml $var", "convert $var to TOML"),
         ]
     }
 
     public builtinFuncs(): vscode.CompletionItem[] {
         return [
             this.f("template", "template $str $ctx", "render the template at location $str"),
-            this.f("define", "define $str", "define a template with the name $str")
+            this.f("define", "define $str", "define a template with the name $str"),
+            this.f("and", "and $a $b ...", "if $a then $b else $a"),
+            this.f("call", "call $func $arg $arg2 ...", "call a $func with all $arg(s)"),
+            this.f("html", "html $str", "escape $str for injection into HTML"),
+            this.f("index", "index $collection $key $key2 ...", "get item out of (nested) collection"),
+            this.f("js", "js $str", "encode $str for embedding in JavaScript"),
+            this.f("len", "len $countable", "get the length of a $countable object (list, string, etc)"),
+            this.f("not", "not $x", "negate the boolean value of $x"),
+            this.f("or", "or $a $b", "if $a then $a else $b"),
+            this.f("print", "print $val", "print value"),
+            this.f("printf", "printf $format $val ...", "print $format, injecting values. Follows Sprintf conventions."),
+            this.f("println", "println $val", "print $val followed by newline"),
+            this.f("urlquery", "urlquery $val", "escape value for injecting into a URL query string"),
+            this.f("ne", "ne $a $b", "returns true if $a != $b"),
+            this.f("eq", "eq $a $b ...", "returns true if $a == $b (== ...)"),
+            this.f("lt", "lt $a $b", "returns true if $a < $b"),
+            this.f("gt", "gt $a $b", "returns true if $a > $b"),
+            this.f("le", "le $a $b", "returns true if $a <= $b"),
+            this.f("ge", "ge $a $b", "returns true if $a >= $b"),
         ]
     }
 
@@ -70,17 +91,74 @@ export class FuncMap {
             this.f("until", "until $count", "return a list of integers beginning with 0 and ending with $until - 1"),
             this.f("untilStep", "untilStep $start $max $step", "start with $start, and add $step until reaching $max"),
             // Date
+            this.f("now", "now", "current date/time"),
+            this.f("date", "date $format $date", "Format a $date with format string $format"),
+            this.f("dateInZone", "date $format $date $tz", "Format $date with $format in timezone $tz"),
+            this.f("dateModify", "dateModify $mod $date", "Modify $day by string $mod"),
+            this.f("htmlDate", "htmlDate $date", "format $date accodring to HTML5 date format"),
+            this.f("htmlDateInZone", "$htmlDate $date $tz", "format $date in $tz for HTML5 date fields"),
             // Defaults
+            this.f("default", "default $default $optional", "if $optional is not set, use $default"),
+            this.f("empty", "empty $val", "if $value is empty, return true. Otherwise return false"),
+            this.f("coalesce", "coalesce $val1 $val2 ...", "for a list of values, return the first non-empty one"),
             // Encoding
+            this.f("b64enc", "b64enc $str", "encode $str with base64 encoding"),
+            this.f("b64dec", "b64dec $str", "decode $str with base64 decoder"),
+            this.f("b32enc", "b32enc $str", "encode $str with base32 encoder"),
+            this.f("b32dec", "b32dec $str", "decode $str with base32 decoder"),
             // Lists
+            this.f("list", "list $a $b ...", "create a list from all args"),
+            this.f("first", "first $list", "return the first item in a $list"),
+            this.f("rest", "rest $list", "return all but the first of $list"),
+            this.f("last", "last $list", "return last item in $list"),
+            this.f("initial", "initial $list", "return all but last in $list"),
+            this.f("append", "append $list $item", "append $item to $list"),
+            this.f("prepend", "prepend $list $item", "prepend $item to $list"),
+            this.f("reverse", "reverse $list", "reverse $list item order"),
+            this.f("uniq", "uniq $list", "remove duplicates from list"),
+            this.f("without", "without $list $item ...", "return $list with $item(s) removed"),
+            this.f("has", "has $list $item", "return true if $item is in $list"),
             // Dictionaries
+            this.f("dict", "dict $key $val $key2 $val2 ...", "create dictionary with $key/$val pairs"),
+            this.f("set", "set $dict $key $val", "set $key=$val in $dict (mutates dict)"),
+            this.f("unset", "unset $dict $key", "remove $key from $dict"),
+            this.f("hasKey", "hasKey $dict $key", "returns true if $key is in $dict"),
+            this.f("pluck", "pluck $key $dict1 $dict2 ...", "Get same $key from all $dict(s)"),
+            this.f("merge", "merge $dest $src", "deeply merge $src into $dest"),
+            this.f("keys", "keys $dict", "get list of all keys in dict. Keys are not ordered."),
+            this.f("pick", "pick $dict $key1 $key2 ...", "extract $key(s) from $dict and create new dict with just those key/val pairs"),
+            this.f("omit", "omit $dict $key1 $key2...", "return new dict with $key(s) removed from $dict"),
             // Type Conversion
+            this.f("atoi", "atoi $str", "convert $str to integer. Zero if conversion fails."),
+            this.f("float64", "float64 $val", "convert $val to float64"),
+            this.f("int", "int $val", "convert $val to int"),
+            this.f("int64", "int64 $val", "convert $val to int64"),
+            this.f("toString", "toString $val", "convert $val to string"),
+            this.f("toStrings", "toStrings $list", "convert every item in $list to string, return list of strings"),
             // File Path
+            this.f("base", "base $path", "return base name (last element) of $path"),
+            this.f("dir", "dir $path", "return all but base name of path (return next dir up)"),
+            this.f("clean", "clean $path", "clean up the $path"),
+            this.f("ext", "ext $path", "return the file extensio (or empty string) of last item on $path"),
+            this.f("isAbs", "isAps $path", "return true if $path is absolute"),
             // UUID
+            this.f("uuidv4", "uuidv4", "generate a UUID v4 (random universally unique ID"),
             // OS
+            this.f("env", "env $var", "(UNSUPPORTED IN HELM) get env var"),
+            this.f("expandenv", "expandenv $str", "(UNSUPPORTED IN HELM) expand env vars in string"),
             // SemVer
+            this.f("semver", "semver $version", "parse a SemVer string (1.2.3-alpha.4+1234). [Reference](http://masterminds.github.io/sprig/semver.html)"),
+            this.f("semverCompare","semverCompare $ver1 $ver2","Compare $ver1 and $ver2. $ver1 can be a [SemVer range]((http://masterminds.github.io/sprig/semver.html)."),
             // Reflection
+            this.f("kindOf","kindOf $val","return the Go kind (primitive type) of a value"),
+            this.f("kindIs","kindIs $kind $val","returns true if $val is of kind $kind"),
+            this.f("typeOf","typeOf $val","returns a string indicate the type of $val"),
+            this.f("typeIs","typeIs $type $val","returns true if $val is of type $type"),
+            this.f("typeIsLike","typeIsLike $substr $val","returns true if $substr is found in $val's type"),
             // Crypto
+            this.f("sha256sum","sha256sum $str","generate a SHA-256 sum of $str"),
+            this.f("derivePassword","derivePassword $counter $long $pass $user $domain","generate a password from [Master Password](http://masterpasswordapp.com/algorithm.html) spec"),
+            this.f("generatePrivateKey","generatePrivateKey 'ecdsa'","generate private PEM key (takes dsa, rsa, or ecdsa)"),
         ]
     }
 
