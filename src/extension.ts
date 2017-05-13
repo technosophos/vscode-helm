@@ -283,7 +283,14 @@ class HelmConsole implements vscode.Disposable {
 
 // Provide hover support
 export class HelmTemplateHoverProvider implements vscode.HoverProvider {
-    private funcmap = (new FuncMap()).all();
+    private funcmap
+    private valmap
+
+    public constructor() {
+        let fm = new FuncMap()
+        this.funcmap = fm.all()
+        this.valmap = fm.helmVals() 
+    }
 
     public provideHover(doc: vscode.TextDocument, pos: vscode.Position, tok: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover> {
         let wordRange = doc.getWordRangeAtPosition(pos)
@@ -291,6 +298,17 @@ export class HelmTemplateHoverProvider implements vscode.HoverProvider {
         if (word == "") {
             return Promise.resolve(null)
         }
+
+        console.log(word)
+
+        if(this.inActionVal(doc, pos, word)) {
+            let found = this.findVal(word)
+            if (found == "") {
+                return Promise.resolve(null)
+            }
+            return new vscode.Hover(found, wordRange)
+        }
+
 
         if (this.inAction(doc, pos, word)) {
             let found = this.findFunc(word)
@@ -300,6 +318,7 @@ export class HelmTemplateHoverProvider implements vscode.HoverProvider {
             return new vscode.Hover(found, wordRange)
         }
 
+        
         return Promise.resolve(null)
     }
 
@@ -313,7 +332,22 @@ export class HelmTemplateHoverProvider implements vscode.HoverProvider {
         for (var i = 0; i < this.funcmap.length; i++) {
             let item = this.funcmap[i]
             if (item.label == word) {
-                return [{language: "helm", value:`${ item.detail }`}, `${ item.documentation }`]
+                return [{language: "helm", value:`{{ ${ item.detail } }}`}, `${ item.documentation }`]
+            }
+        }
+    }
+
+    private inActionVal(doc: vscode.TextDocument, pos: vscode.Position, word: string): boolean {
+        let lineText = doc.lineAt(pos.line).text
+        let r = new RegExp("{{[^}]*\\.("+word+")[\\.\\s]?[^{]*}}")
+        return r.test(lineText)
+    }
+
+    private findVal(word: string): vscode.MarkedString[] | string{
+        for (var i = 0; i < this.valmap.length; i++) {
+            let item = this.valmap[i]
+            if (item.label == word) {
+                return [{language: "helm", value:`{{ ${ item.detail } }}`}, `${ item.documentation }`]
             }
         }
     }
@@ -360,7 +394,7 @@ class HelmTemplatePreviewDocumentProvider implements vscode.TextDocumentContentP
 
 export class HelmTemplateCompletionProvider implements vscode.CompletionItemProvider {
     public provideCompletionItems(doc: vscode.TextDocument, pos: vscode.Position) {
-        console.log("called helmTemplateCOmpletionProvider")
+        console.log("called helmTemplateCompletionProvider")
         return new vscode.CompletionList((new FuncMap).all());
     }
 }

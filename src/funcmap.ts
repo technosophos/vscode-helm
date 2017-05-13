@@ -6,6 +6,24 @@ export class FuncMap {
         return this.sprigFuncs().concat(this.builtinFuncs()).concat(this.helmFuncs())
     }
 
+    public helmVals(): vscode.CompletionItem[] {
+        return [
+            this.v("Values", ".Values", `The values made available through values.yaml, --set and -f.`),
+            this.v("Chart",".Chart","Chart metadata"),
+            this.v("Files",".Files.Get $str","access non-template files within the chart"),
+            this.v("Capabilities",".Capabilities.KubeVersion ","access capabilities of Kubernetes"),
+            this.v("Release", ".Release", `Built-in release values. Attributes include:
+- .Release.Name: Name of the release
+- .Release.Time: Time release was executed
+- .Release.Namespace: Namespace into which release will be placed (if not overridden)
+- .Release.Service: The service that produced this release. Usually Tiller.
+- .Release.IsUpgrade: True if this is an upgrade
+- .Release.IsInstall: True if this is an install
+- .Release.Revision: The revision number
+`),
+        ]
+    }
+
     public helmFuncs(): vscode.CompletionItem[] {
         return [
             this.f("include", "include $str $ctx", "(chainable) include the named template with the given context."),
@@ -168,6 +186,13 @@ export class FuncMap {
     f(name: string, args: string, doc: string): vscode.CompletionItem {
         let i = new vscode.CompletionItem(name, vscode.CompletionItemKind.Function)
         i.detail = args
+        i.documentation = doc
+        return i
+    }
+
+    v(name: string, use: string, doc: string): vscode.CompletionItem {
+        let i = new vscode.CompletionItem(name, vscode.CompletionItemKind.Constant)
+        i.detail = use
         i.documentation = doc
         return i
     }
