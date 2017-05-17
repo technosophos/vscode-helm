@@ -11,14 +11,44 @@ export class Resources {
     }
 
     v1(): vscode.CompletionItem[] {
+        return this.fromSchema(v1.default.models)
+    }
+
+    // Extract hover documentation from a Swagger model.
+    fromSchema(schema): vscode.CompletionItem[] {
         let res = []
-        _.each(v1.default.models, (v, k) => {
+        _.each(schema, (v, k) => {
             let i = k.lastIndexOf(".")
             //let version = k.substr(0, i)
             let kind = k.substr(i+1)
             res.push(val(kind, `kind: ${ kind }`, v.description))
             _.each(v.properties, (spec, label) => {
-                res.push(d(label, `${ label }: ${ spec.type }`, spec.description))
+                var type = "undefined"
+                switch (spec.type) {
+                    case undefined:
+                        // This usually means there's a $ref instead of a type
+                        if (spec["$ref"]) {
+                            type = spec["$ref"]
+                        }
+                        break
+                    case "array":
+                        // Try to give a pretty type.
+                        if(spec.items.type) {
+                            type = spec.items.type + "[]"
+                            break
+                        } else if (spec.items["$ref"]) {
+                            type = spec.items["$ref"] + "[]"
+                            break
+                        }
+                        type = "[]"
+                        break
+                    default:
+                        if (spec.type) {
+                            type = spec.type
+                        }
+                        break;
+                }
+                res.push(d(label, `${ label }: ${ type }`, spec.description))
             })
         })
         return res
