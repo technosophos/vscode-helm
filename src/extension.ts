@@ -6,6 +6,7 @@ import * as shell from 'shelljs';
 import * as filepath from 'path';
 import { FuncMap } from './funcmap';
 import * as YAML from 'yamljs';
+import { Resources } from './resources';
 
 // The helm console channel.
 const HelmChannel = "Helm"
@@ -286,11 +287,14 @@ class HelmConsole implements vscode.Disposable {
 export class HelmTemplateHoverProvider implements vscode.HoverProvider {
     private funcmap
     private valmap
+    private resmap
 
     public constructor() {
         let fm = new FuncMap()
+        let rs = new Resources()
         this.funcmap = fm.all()
         this.valmap = fm.helmVals() 
+        this.resmap = rs.all()
     }
 
     public provideHover(doc: vscode.TextDocument, pos: vscode.Position, tok: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover> {
@@ -300,32 +304,40 @@ export class HelmTemplateHoverProvider implements vscode.HoverProvider {
             return Promise.resolve(null)
         }
 
-        console.log(word)
+        // FIXME: right now, the line `foo: {{foo}}` may match both the action and the resource def
 
-        if(this.inActionVal(doc, pos, word)) {
+        if (this.inActionVal(doc, pos, word)) {
             let found = this.findVal(word)
-            if (found == "") {
-                return Promise.resolve(null)
+            if ( found ) {
+                return new vscode.Hover(found, wordRange)
             }
-            return new vscode.Hover(found, wordRange)
         }
-
 
         if (this.inAction(doc, pos, word)) {
             let found = this.findFunc(word)
-            if (found == "") {
-                return Promise.resolve(null)
+            if (found) {
+               return new vscode.Hover(found, wordRange) 
             }
-            return new vscode.Hover(found, wordRange)
         }
 
-        
+        if (this.notInAction(doc, pos, word)) {
+            let found = this.findResourceDef(word)
+            if (found) {
+                return new vscode.Hover(found, wordRange)
+            }
+        }
         return Promise.resolve(null)
     }
 
     private inAction(doc: vscode.TextDocument, pos: vscode.Position, word: string): boolean {
         let lineText = doc.lineAt(pos.line).text
-        let r = new RegExp("{{[^}]*\\s("+word+")\\s[^{]*}}")
+        let r = new RegExp("{{[^}]*[\\s\\(|]?("+word+")\\s[^{]*}}")
+        return r.test(lineText)
+    }
+
+    private notInAction (doc: vscode.TextDocument, pos: vscode.Position, word: string): boolean {
+        let lineText = doc.lineAt(pos.line).text
+        let r = new RegExp("(^|})[^{]*("+word+")")
         return r.test(lineText)
     }
 
@@ -349,6 +361,14 @@ export class HelmTemplateHoverProvider implements vscode.HoverProvider {
             let item = this.valmap[i]
             if (item.label == word) {
                 return [{language: "helm", value:`{{ ${ item.detail } }}`}, `${ item.documentation }`]
+            }
+        }
+    }
+    private findResourceDef(word: string): vscode.MarkedString[] | string {
+        for (var i = 0; i < this.resmap.length; i++) {
+            let item = this.resmap[i]
+            if (item.label == word) {
+                return [{language: "helm", value:`${ item.detail }`}, `${ item.documentation }`]
             }
         }
     }
