@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 import * as shell from 'shelljs';
 import * as filepath from 'path';
 import { FuncMap } from './funcmap';
+import * as YAML from 'yamljs';
 
 // The helm console channel.
 const HelmChannel = "Helm"
@@ -383,6 +384,15 @@ class HelmTemplatePreviewDocumentProvider implements vscode.TextDocumentContentP
                 if (code != 0) {
                     resolve(previewBody("Chart Preview", "Failed template call." + err, true))
                     return
+                }
+                var res
+                try {
+                    res = YAML.parse(out)
+                } catch (e) {
+                    // TODO: Figure out the best way to display this message, but have it go away when the
+                    // file parses correctly.
+                    //resolve(previewBody("Chart Preview", "Invalid YAML: " + err.message, true))
+                    vscode.window.showErrorMessage(`YAML failed to parse: ${ e.message }`)
                 }
                 resolve(previewBody(reltpl, out))
             })
