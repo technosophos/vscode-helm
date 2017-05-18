@@ -34,6 +34,11 @@
                 "description": "Run the linter on this chart."
             },
             {
+                "command": "extension.helmDepUp",
+                "title": "Helm: Dependency Update",
+                "description": "Update the dependencies listed in requirements.yaml."
+            },
+            {
                 "command": "extension.helmDryRun",
                 "title": "Helm: Dry Run",
                 "description": "Run 'helm install --dry-run --debug' on this chart."
@@ -42,6 +47,11 @@
                 "command": "extension.helmTemplate",
                 "title": "Helm: Template",
                 "description": "Run 'helm template' on this chart. Requires the helm-template plugin."
+            },
+            {
+                "command": "extension.helmInsertReq",
+                "title": "Helm: Insert Dependency",
+                "description": "Insert a dependency YAML fragment"
             },
             {
                 "command": "extension.helmTemplatePreview",

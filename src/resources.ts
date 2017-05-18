@@ -1,4 +1,3 @@
-
 import * as vscode from 'vscode';
 import * as v1 from './v1';
 import * as _ from 'lodash';

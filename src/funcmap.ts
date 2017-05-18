@@ -63,6 +63,12 @@ export class FuncMap {
 
     public sprigFuncs():vscode.CompletionItem[] {
         return [
+            // 2.12.0
+            this.f("snakecase", "snakecase $str", "Convert $str to snake_case"),
+            this.f("camelcase", "camelcase $str", "convert string to camelCase"),
+            this.f("shuffle", "shuffle $str", "randomize a string"),
+            this.f("fail", `fail $msg`, "cause the template render to fail with a message $msg."),
+
             // String
             this.f("trim", "trim $str", "remove space from either side of string"),
             this.f("trimAll", "trimAll $trim $str", "remove $trim from either side of $str"),
@@ -93,6 +99,7 @@ export class FuncMap {
             this.f("cat", "cat $str1 $str2 ...", "concatenate all given strings into one, separated by spaces"),
             this.f("indent", "indent $count $str", "indent $str with $count space chars on the left"),
             this.f("replace", "replace $find $replace $str", "find $find and replace with $replace"),
+            
             // String list
             this.f("plural", "plural $singular $plural $count", "if $count is 1, return $singular, else return $plural"),
             this.f("join", "join $sep $str1 $str2 ...", "concatenate all given strings into one, separated by $sep"),
@@ -180,8 +187,6 @@ export class FuncMap {
             this.f("sha256sum","sha256sum $str","generate a SHA-256 sum of $str"),
             this.f("derivePassword","derivePassword $counter $long $pass $user $domain","generate a password from [Master Password](http://masterpasswordapp.com/algorithm.html) spec"),
             this.f("generatePrivateKey","generatePrivateKey 'ecdsa'","generate private PEM key (takes dsa, rsa, or ecdsa)"),
-            // Flow control
-            this.f("fail", `fail $msg`, "cause the template render to fail with a message $msg.")
         ]
     }
 

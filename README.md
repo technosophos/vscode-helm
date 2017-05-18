@@ -16,6 +16,9 @@ This Visual Studio Code extension provides [Kubernetes Helm](http://helm.sh) cha
   - **Helm: Template**: Run your chart through the template engine
   - **Helm: DryRun**: Run a `helm install --dry-run --debug` on a remote cluster and get the results
   - **Helm: Version**: Get the Helm version
+  - **Helm: Dependency Update**: Update a chart's dependencies.
+- Code lenses for:
+  - requirements.yaml
 
 ## Requirements
 
