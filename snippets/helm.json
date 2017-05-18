@@ -1,9 +1,19 @@
 {
+  "Chart.yaml": {
+    "prefix": "Chart.yaml",
+    "body": [
+      "apiVersion: v1",
+      "name: \"$1\"",
+      "description: \"${2:A helm chart}\"",
+      "version: 0.1.0"
+    ],
+    "description": "Create a Chart.yaml file"
+  },
   "Pod": {
     "prefix": "kindPod",
     "body": [
       "apiVersion: v1",
-      "kind: PodFoo",
+      "kind: Pod",
       "metadata:",
       "  name: \"{{.Release.Name}}-{{.Values.Name}}\"",
       "  labels:",
@@ -41,5 +51,15 @@
       "  # password: {{ .Values.password | b64enc }}"
     ],
     "description": "Create a Secret manifest"
+  },
+  "requirements.yaml": {
+    "prefix": "requirements.yaml",
+    "body": [
+      "dependencies:",
+      "- name: ${1:redis}",
+      "  version: \"${2:\u003e0.1.0}\"",
+      "  repository: ${3:https://kubernetes-charts.storage.googleapis.com/}"
+    ],
+    "description": "Create a Helm requirements.yaml"
   }
 }

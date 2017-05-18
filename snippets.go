@@ -1,29 +1,39 @@
 package main
 
-import(
-	"fmt"
-	"encoding/json"
-	"os"
+import (
 	"bufio"
+	"encoding/json"
+	"fmt"
+	"os"
 	"path/filepath"
 )
 
 type Snippet struct {
-	Prefix string `json:"prefix"`
-	Body []string `json:"body"`
-	Description string `json:"description"`
+	Prefix      string   `json:"prefix"`
+	Body        []string `json:"body"`
+	Description string   `json:"description"`
 }
 
 var snippets = map[string]Snippet{
 	"Secret": {
-		Prefix: "kindSecret",
-		Body: load("secret.yaml"),
+		Prefix:      "kindSecret",
+		Body:        load("secret.yaml"),
 		Description: "Create a Secret manifest",
 	},
 	"Pod": {
-		Prefix: "kindPod",
+		Prefix:      "kindPod",
 		Description: "Create a Pod manifest",
-		Body: load("pod.yaml"),
+		Body:        load("pod.yaml"),
+	},
+	"Chart.yaml": {
+		Prefix:      "Chart.yaml",
+		Description: "Create a Chart.yaml file",
+		Body:        load("Chart.yaml"),
+	},
+	"requirements.yaml": {
+		Prefix:      "requirements.yaml",
+		Description: "Create a Helm requirements.yaml",
+		Body:        load("requirements.yaml"),
 	},
 }
 
@@ -48,7 +58,7 @@ func load(loc string) []string {
 	return lines
 }
 
-func main(){
+func main() {
 	out, err := json.MarshalIndent(snippets, "", "  ")
 	if err != nil {
 		panic(err)

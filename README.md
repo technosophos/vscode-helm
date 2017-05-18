@@ -7,18 +7,18 @@ This Visual Studio Code extension provides [Kubernetes Helm](http://helm.sh) cha
 ## Features
 
 - Syntax highlighting for YAML + Helm Templates
-- Autocomplete for Helm, Sprig, and Go Tpl functions5
+- Autocomplete for Helm, Sprig, and Go Tpl functions
 - Help text (on hover) for Helm, Sprig, and Go Tpl functions
-- Snippets for quickly scaffolding new chart templates
-- Commands for..
+- Snippets for quickly scaffolding new charts and templates
+- Commands for...
   - **Helm: Lint**: Lint your chart
-  - **Helm: Preview**: Open a preview window and preview how your template will render
+  - **Helm: Preview Template**: Open a preview window and preview how your template will render
   - **Helm: Template**: Run your chart through the template engine
   - **Helm: DryRun**: Run a `helm install --dry-run --debug` on a remote cluster and get the results
   - **Helm: Version**: Get the Helm version
   - **Helm: Dependency Update**: Update a chart's dependencies.
 - Code lenses for:
-  - requirements.yaml
+  - requirements.yaml (Add and update dependencies)
 
 ## Requirements
 
