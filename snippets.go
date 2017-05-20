@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 )
 
+// Snippet represents a VS Code snippet.
 type Snippet struct {
 	Prefix      string   `json:"prefix"`
 	Body        []string `json:"body"`
@@ -24,6 +25,26 @@ var snippets = map[string]Snippet{
 		Prefix:      "kindPod",
 		Description: "Create a Pod manifest",
 		Body:        load("pod.yaml"),
+	},
+	"ConfigMap": {
+		Prefix:      "kindConfigMap",
+		Description: "Create a ConfigMap manifest",
+		Body:        load("configmap.yaml"),
+	},
+	"Deployment": {
+		Prefix:      "kindDeployment",
+		Description: "Create a Deployment manifest",
+		Body:        load("deployment.yaml"),
+	},
+	"Service": {
+		Prefix:      "kindSerice",
+		Description: "Create a Service manifest",
+		Body:        load("service.yaml"),
+	},
+	"Ingress": {
+		Prefix:      "kindIngress",
+		Description: "Create a Ingress manifest",
+		Body:        load("ingress.yaml"),
 	},
 	"Chart.yaml": {
 		Prefix:      "Chart.yaml",

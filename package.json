@@ -59,6 +59,16 @@
                 "description": "Run 'helm template' on this chart and show only this file. Requires the helm-template plugin."
             }
         ],
+        "menus": {
+            "explorer/context": [
+                {
+                    "title": "Update Dependencies",
+                    "when": "resourceFilename == requirements.yaml",
+                    "command": "extension.helmDepUp",
+                    "group": "navigation@99"
+                }
+            ]
+        },
         "languages": [{
             "id": "helm",
             "aliases": ["helm-template", "helm"],

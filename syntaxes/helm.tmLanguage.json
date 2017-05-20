@@ -6,8 +6,18 @@
 	"patterns": [
 		{
 			"name": "meta.tag.gotpl.instruction",
-			"begin": "{{-?\\s*",
-			"end": "\\s*-?}}",
+			"begin": "({{-?)\\s*",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.mapping.begin.helm"
+				}
+			},
+			"end": "\\s*(-?}})",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.mapping.end.helm"
+				}
+			}, 
 			"patterns": [
 				{"include": "#gotpl-comment"},
 				{"include": "#gotpl-expressions"}
@@ -537,7 +547,28 @@
 				{
 					"match": "\\\\\\n",
 					"name": "constant.character.escape.double-quoted.newline.yaml"
-				}
+				},
+				{
+					"name": "meta.tag.gotpl.instruction",
+					"begin": "({{-?)\\s*",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.mapping.begin.helm"
+						}
+					},
+					"end": "\\s*(-?}})",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.mapping.end.helm"
+						}
+					}, 
+					
+					"comment": "FIXME: This should set highlighting on the {{ and }}",
+					"patterns": [
+						{"include": "#gotpl-comment"},
+						{"include": "#gotpl-expressions"}
+					]
+			  }  
 			]
 		},
 		"flow-scalar-plain-in": {
