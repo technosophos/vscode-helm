@@ -65,6 +65,11 @@ export function activate(context: vscode.ExtensionContext) {
     // On save, refresh the YAML preview.
     vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
 		if (e === vscode.window.activeTextEditor.document) {
+            let doc = vscode.window.activeTextEditor.document
+            if (doc.uri.scheme != "file") {
+                return
+            }
+
             exec.pickChartForFile(vscode.window.activeTextEditor.document.fileName, chartPath => {
                 let u = vscode.Uri.parse("helm-template-preview://" + chartPath);
                 previewProvider.update(u);
@@ -75,6 +80,10 @@ export function activate(context: vscode.ExtensionContext) {
     // On editor change, refresh the YAML preview
     vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor) => {
         if (e.document === vscode.window.activeTextEditor.document) {
+            let doc = vscode.window.activeTextEditor.document
+            if (doc.uri.scheme != "file") {
+                return
+            }
             exec.pickChartForFile(vscode.window.activeTextEditor.document.fileName, chartPath => {
                 let u = vscode.Uri.parse("helm-template-preview://" + chartPath);
                 previewProvider.update(u);
