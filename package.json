@@ -57,6 +57,11 @@
                 "command": "extension.helmTemplatePreview",
                 "title": "Helm: Preview Template",
                 "description": "Run 'helm template' on this chart and show only this file. Requires the helm-template plugin."
+            },
+            {
+                "command": "extension.helmInspectValues",
+                "title": "Inspect Chart",
+                "description": "Inspect a Helm Chart"
             }
         ],
         "menus": {
@@ -66,6 +71,11 @@
                     "when": "resourceFilename == requirements.yaml",
                     "command": "extension.helmDepUp",
                     "group": "navigation@99"
+                },
+                {
+                    "when": "",
+                    "command": "extension.helmInspectValues",
+                    "group": "navigation@98"
                 }
             ]
         },
@@ -101,6 +111,8 @@
         "@types/mocha": "^2.2.32"
     },
     "dependencies": {
-        "shelljs":"0.7.7"
+        "shelljs":"0.7.7",
+        "yamljs":"0.2.10",
+        "lodash":">3"
     }
 }

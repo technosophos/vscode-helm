@@ -44,6 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('extension.helmTemplate', exec.helmTemplate),
         vscode.commands.registerCommand('extension.helmTemplatePreview', exec.helmTemplatePreview),
         vscode.commands.registerCommand('extension.helmLint', exec.helmLint),
+        vscode.commands.registerCommand('extension.helmInspectValues', exec.helmInspectValues),
         vscode.commands.registerCommand('extension.helmDryRun', exec.helmDryRun),
         vscode.commands.registerCommand('extension.helmDepUp', exec.helmDepUp),
         vscode.commands.registerCommand('extension.helmInsertReq', exec.insertRequirement),
