@@ -159,6 +159,63 @@
     ],
     "description": "Create a Service manifest"
   },
+  "define": {
+    "prefix": "define",
+    "body": [
+      "{{- define \"${1}\" }}",
+      "${2}",
+      "{{- end -}}"
+    ],
+    "description": "Define a template"
+  },
+  "if": {
+    "prefix": "if",
+    "body": [
+      "{{- if ${1:condition} -}}",
+      "{{- end -}}"
+    ],
+    "description": "Create a conditional"
+  },
+  "ifelse": {
+    "prefix": "ifElse",
+    "body": [
+      "{{- if ${1:condition} -}}",
+      "  ${2}",
+      "{{- elseif ${3:condition2} -}}",
+      "  ${4}",
+      "{{- else -}}",
+      "  ${5}",
+      "{{- end -}}"
+    ],
+    "description": "Create a conditional with elseif, else"
+  },
+  "range-list": {
+    "prefix": "rangeList",
+    "body": [
+      "{{- range \\$i, \\$val := ${1:$list} }}",
+      "  ${2}",
+      "{{ end -}}"
+    ],
+    "description": "Loop over a list"
+  },
+  "range-map": {
+    "prefix": "rangeDict",
+    "body": [
+      "{{- range \\$key, \\$val := ${1:$dict} }}",
+      "  ${2}",
+      "{{ end -}}"
+    ],
+    "description": "Loop over a dict or map"
+  },
+  "range-until": {
+    "prefix": "rangeUntil",
+    "body": [
+      "{{- range \\$i := until ${1:$number} }}",
+      "  ${2}",
+      "{{ end -}}"
+    ],
+    "description": "Loop a fixed number of times."
+  },
   "requirements.yaml": {
     "prefix": "requirements.yaml",
     "body": [
@@ -168,5 +225,14 @@
       "  repository: ${3:https://kubernetes-charts.storage.googleapis.com/}"
     ],
     "description": "Create a Helm requirements.yaml"
+  },
+  "with": {
+    "prefix": "with",
+    "body": [
+      "{{- with ${1:.Values} }}",
+      "  ${2}",
+      "{{- end -}}"
+    ],
+    "description": "Create a with block"
   }
 }

@@ -56,6 +56,43 @@ var snippets = map[string]Snippet{
 		Description: "Create a Helm requirements.yaml",
 		Body:        load("requirements.yaml"),
 	},
+
+	// Template language
+	"range-list": {
+		Prefix:      "rangeList",
+		Description: "Loop over a list",
+		Body:        load("range-list.tpl"),
+	},
+	"range-map": {
+		Prefix:      "rangeDict",
+		Description: "Loop over a dict or map",
+		Body:        load("range-map.tpl"),
+	},
+	"range-until": {
+		Prefix:      "rangeUntil",
+		Description: "Loop a fixed number of times.",
+		Body:        load("range-until.tpl"),
+	},
+	"if": {
+		Prefix:      "if",
+		Description: "Create a conditional",
+		Body:        load("if.tpl"),
+	},
+	"ifelse": {
+		Prefix:      "ifElse",
+		Description: "Create a conditional with elseif, else",
+		Body:        load("ifelse.tpl"),
+	},
+	"with": {
+		Prefix:      "with",
+		Description: "Create a with block",
+		Body:        load("with.tpl"),
+	},
+	"define": {
+		Prefix:      "define",
+		Description: "Define a template",
+		Body:        load("define.tpl"),
+	},
 }
 
 func load(loc string) []string {

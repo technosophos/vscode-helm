@@ -11,11 +11,11 @@ import * as fs from "fs";
 
 export function helmVersion() {
     helmExec("version -c", function(code, out, err){
-    if (code != 0) {
-        vscode.window.showErrorMessage(err)
-        return
-    }
-    vscode.window.showInformationMessage(out)
+        if (code != 0) {
+            vscode.window.showErrorMessage(err)
+            return
+        }
+        vscode.window.showInformationMessage(out)
     })
 }
 
