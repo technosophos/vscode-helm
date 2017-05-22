@@ -20,6 +20,9 @@ export const HELM_REQ_MODE: vscode.DocumentFilter = { language: "helm", scheme: 
 export const HELM_CHART_MODE: vscode.DocumentFilter = { language: "helm", scheme: "file", pattern: "**/Chart.yaml" }
 export const HELM_TPL_MODE: vscode.DocumentFilter = { language: "helm", scheme: "file", pattern: "**/templates/*.*" }
 
+export const HELM_PREVIEW_SCHEME = 'helm-template-preview'
+export const HELM_INSPECT_SCHEME = 'helm-inspect-values'
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -55,8 +58,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerHoverProvider(HELM_MODE, new HelmTemplateHoverProvider()),
 
         // Register preview providers
-        vscode.workspace.registerTextDocumentContentProvider("helm-template-preview", previewProvider),
-        vscode.workspace.registerTextDocumentContentProvider("helm-inspect-values", inspectProvider),
+        vscode.workspace.registerTextDocumentContentProvider(HELM_PREVIEW_SCHEME, previewProvider),
+        vscode.workspace.registerTextDocumentContentProvider(HELM_INSPECT_SCHEME, inspectProvider),
 
         vscode.languages.registerCompletionItemProvider(completionFilter, completionProvider),
 
@@ -66,28 +69,36 @@ export function activate(context: vscode.ExtensionContext) {
 
     // On save, refresh the YAML preview.
     vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
-		if (e === vscode.window.activeTextEditor.document) {
+        if (!editorIsActive()) {
+            logger.log("WARNING: No active editor during save. Nothing saved.")
+            return
+        }
+        if (e === vscode.window.activeTextEditor.document) {
             let doc = vscode.window.activeTextEditor.document
             if (doc.uri.scheme != "file") {
                 return
             }
 
             exec.pickChartForFile(vscode.window.activeTextEditor.document.fileName, chartPath => {
-                let u = vscode.Uri.parse("helm-template-preview://" + chartPath);
+                let u = vscode.Uri.parse(HELM_PREVIEW_SCHEME + "://" + chartPath);
                 previewProvider.update(u);
             })
-			
-		}
+            
+        }
 	});
     // On editor change, refresh the YAML preview
     vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor) => {
+        if (!editorIsActive()) {
+            //logger.log("No active editor")
+            return
+        }
         if (e.document === vscode.window.activeTextEditor.document) {
             let doc = vscode.window.activeTextEditor.document
             if (doc.uri.scheme != "file") {
                 return
             }
             exec.pickChartForFile(vscode.window.activeTextEditor.document.fileName, chartPath => {
-                let u = vscode.Uri.parse("helm-template-preview://" + chartPath);
+                let u = vscode.Uri.parse(HELM_PREVIEW_SCHEME + "://" + chartPath);
                 previewProvider.update(u);
             })
 		}
@@ -101,4 +112,9 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {
 
+}
+
+function editorIsActive(): boolean {
+    // force type coercion
+    return (vscode.window.activeTextEditor) ? true : false
 }

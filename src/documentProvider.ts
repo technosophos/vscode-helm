@@ -4,6 +4,8 @@ import * as exec from './exec';
 import * as YAML from 'yamljs';
 import * as fs from 'fs';
 
+import {logger} from './logger';
+
 function previewBody(title: string, data: string, err?: boolean): string {
     return `<body>
       <h1>${ title }</h1>
@@ -45,22 +47,22 @@ export class HelmInspectDocumentProvider implements vscode.TextDocumentContentPr
 // Provide an HTML-formatted preview window.
 export class HelmTemplatePreviewDocumentProvider implements vscode.TextDocumentContentProvider {
     private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
-    
+
     get onDidChange(): vscode.Event<vscode.Uri> {
         return this._onDidChange.event
     }
 
     public update(uri: vscode.Uri) {
-		this._onDidChange.fire(uri);
+        this._onDidChange.fire(uri);
 	}
 
     public provideTextDocumentContent(uri: vscode.Uri, tok: vscode.CancellationToken): vscode.ProviderResult<string> {
         return new Promise<string>((resolve, reject) => {
-            console.log("provideTextDocumentContent called with uri " + uri.toString())
             let editor = vscode.window.activeTextEditor
             if (!editor) {
-                // Substitute an empty doc
-                resolve(previewBody("Chart Preview", ""))
+                // Substitute an empty doc. This basically happens when switching back and forth between non-editor
+                // windows, especially when there are multiple preview windows open.
+                resolve(previewBody(exec.loadChartMetadata(uri.fsPath).name, "no file selected"))
                 return
             }
 
@@ -69,9 +71,11 @@ export class HelmTemplatePreviewDocumentProvider implements vscode.TextDocumentC
             let prevWin = this
             let reltpl = filepath.relative(filepath.dirname(chartPath), filePath)
 
-            if (!reltpl.indexOf("templates")) {
+
+            if (reltpl.indexOf("templates") < 0) {
                 // No reason to send this through the template renderer.
-                resolve(previewBody("Chart Preview", ""))
+                //resolve(editor.document.getText())
+                resolve(previewBody(exec.loadChartMetadata(uri.fsPath).name, "no template  selected"))
                 return
             }
 

@@ -43,10 +43,15 @@ export function helmTemplatePreview() {
     }
 
     let filePath = editor.document.fileName
+    if (filePath.indexOf("templates") < 0 ) {
+        vscode.window.showInformationMessage("Not a template: " +filePath)
+        return
+    }
     pickChartForFile(filePath, path => {
         let reltpl = filepath.relative(path, filePath)
         let u = vscode.Uri.parse("helm-template-preview://" + path)
-        vscode.commands.executeCommand("vscode.previewHtml", u, vscode.ViewColumn.Two, "View YAML")
+        let chart = loadChartMetadata(path)
+        vscode.commands.executeCommand("vscode.previewHtml", u, vscode.ViewColumn.Two, `${ chart.name } ${ chart.version }`)
     })
 
 }
@@ -105,7 +110,7 @@ export function helmDryRun() {
 //
 // callback is fn(path)
 export function pickChart(fn) {
-    vscode.workspace.findFiles("**/Chart.yaml", "", 10).then(matches => {
+    vscode.workspace.findFiles("**/Chart.yaml", "", 1024).then(matches => {
         switch(matches.length) {
             case 0:
                 vscode.window.showErrorMessage("No charts found")
@@ -132,9 +137,28 @@ export function pickChart(fn) {
     })
 }
 
+class Chart {
+    public name: string
+    public version: string
+    public appVersion: string
+}
+
+// Load a chart object
+export function loadChartMetadata(chartDir: string): Chart {
+    let f = filepath.join(chartDir, "Chart.yaml")
+    var c
+    try {
+        c = YAML.load(f)
+    } catch (err) {
+        vscode.window.showErrorMessage("Chart.yaml: " + err)
+    }
+    return c
+}
+
 // Given a file, show any charts that this file belongs to.
 export function pickChartForFile(file: string, fn) {
-    vscode.workspace.findFiles("**/Chart.yaml", "", 10).then(matches => {
+    vscode.workspace.findFiles("**/Chart.yaml", "", 1024).then(matches => {
+        //logger.log(`Found ${ matches.length } charts`)
         switch(matches.length) {
             case 0:
                 vscode.window.showErrorMessage("No charts found")
@@ -162,7 +186,7 @@ export function pickChartForFile(file: string, fn) {
                 })
 
                 if (paths.length == 0) {
-                    vscode.window.showErrorMessage("No charts found containing " + file)
+                    vscode.window.showErrorMessage("Chart not found for " + file)
                     return
                 }
 
