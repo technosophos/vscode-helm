@@ -59,7 +59,8 @@ export class HelmTemplatePreviewDocumentProvider implements vscode.TextDocumentC
             console.log("provideTextDocumentContent called with uri " + uri.toString())
             let editor = vscode.window.activeTextEditor
             if (!editor) {
-                reject("No active editor")
+                // Substitute an empty doc
+                resolve(previewBody("Chart Preview", ""))
                 return
             }
 
@@ -67,10 +68,23 @@ export class HelmTemplatePreviewDocumentProvider implements vscode.TextDocumentC
             let chartPath = uri.fsPath
             let prevWin = this
             let reltpl = filepath.relative(filepath.dirname(chartPath), filePath)
+
+            if (!reltpl.indexOf("templates")) {
+                // No reason to send this through the template renderer.
+                resolve(previewBody("Chart Preview", ""))
+                return
+            }
+
             console.log("templating " + reltpl)
             exec.helmExec("template " + chartPath + " --execute " + reltpl, (code, out, err) => {
                 if (code != 0) {
                     resolve(previewBody("Chart Preview", "Failed template call." + err, true))
+                    return
+                }
+
+                if (filepath.basename(reltpl) == "NOTES.txt") {
+                    // NOTES.txt is not a YAML doc.
+                    resolve(previewBody(reltpl, out))
                     return
                 }
                 var res
