@@ -2,12 +2,44 @@ import * as vscode from 'vscode';
 import * as filepath from 'path';
 import * as exec from './exec';
 import * as YAML from 'yamljs';
+import * as fs from 'fs';
 
 function previewBody(title: string, data: string, err?: boolean): string {
     return `<body>
       <h1>${ title }</h1>
       <pre>${ data }</pre>
     </body>`;
+}
+
+export class HelmInspectDocumentProvider implements vscode.TextDocumentContentProvider {
+    public provideTextDocumentContent(uri: vscode.Uri, tok: vscode.CancellationToken): vscode.ProviderResult<string> {
+        return new Promise<string>((resolve, reject) => {
+            console.log("provideTextDocumentContent called with uri " + uri.toString())
+
+            let printer = (code, out, err) => {
+                if (code == 0) {
+                    let p = (filepath.extname(uri.fsPath) == ".tgz") ? filepath.basename(uri.fsPath) : "Chart"
+                    let title = "Inspect " + p
+                    resolve(previewBody(title, out))
+                }
+                reject(err)
+            }
+
+            let file = uri.fsPath
+            let fi = fs.statSync(file)
+            if (!fi.isDirectory() && filepath.extname(file) == ".tgz") {
+                exec.helmExec("inspect values " + file, printer)
+                return
+            } else if (fi.isDirectory() && fs.existsSync(filepath.join(file, "Chart.yaml"))) {
+                exec.helmExec("inpsect values " + file, printer)
+                return
+            }
+            exec.pickChartForFile(file, path => {
+                exec.helmExec("inspect values "+ path, printer)
+            })
+        })
+        
+    }
 }
 
 // Provide an HTML-formatted preview window.

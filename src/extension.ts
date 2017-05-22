@@ -10,7 +10,7 @@ import * as exec from './exec';
 import { logger } from './logger';
 import { HelmTemplateHoverProvider } from './hoverProvider';
 import { RequirementsCodeLenseProvider } from './requirementsCodeLense';
-import { HelmTemplatePreviewDocumentProvider } from './documentProvider';
+import { HelmTemplatePreviewDocumentProvider, HelmInspectDocumentProvider } from './documentProvider';
 import { HelmTemplateCompletionProvider } from './completionProvider';
 
 // Filters for different Helm file types.
@@ -31,6 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
     
     context.subscriptions.push(logger)
     let previewProvider = new HelmTemplatePreviewDocumentProvider()
+    let inspectProvider = new HelmInspectDocumentProvider()
     let completionProvider = new HelmTemplateCompletionProvider()
     let completionFilter = [
         "helm", 
@@ -53,8 +54,9 @@ export function activate(context: vscode.ExtensionContext) {
 
         vscode.languages.registerHoverProvider(HELM_MODE, new HelmTemplateHoverProvider()),
 
-        // Register helm template preview
+        // Register preview providers
         vscode.workspace.registerTextDocumentContentProvider("helm-template-preview", previewProvider),
+        vscode.workspace.registerTextDocumentContentProvider("helm-inspect-values", inspectProvider),
 
         vscode.languages.registerCompletionItemProvider(completionFilter, completionProvider),
 

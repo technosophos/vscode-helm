@@ -81,27 +81,8 @@ export function helmLint() {
 // helmInspect inspects a packaged chart or a chart dir and returns the values.
 // If a non-tgz, non-directory file is passed, this tries to find a parent chart.
 export function helmInspectValues(u: vscode.Uri) {
-    let file = u.fsPath
-    let printer = (code, out, err) => {
-        logger.log(out)
-        logger.log(err)
-        if (code != 0) {
-            logger.log("⎈⎈⎈ INSPECT FAILED")
-        }
-    }
-
-    let fi = fs.statSync(file)
-    if (!fi.isDirectory() && filepath.extname(file) == ".tgz") {
-        helmExec("inspect values " + file, printer)
-        return
-    } else if (fi.isDirectory() && fs.existsSync(filepath.join(file, "Chart.yaml"))) {
-        helmExec("inpsect values " + file, printer)
-        return
-    }
-    pickChartForFile(file, path => {
-        logger.log("⎈⎈⎈ Inspecting " + path)
-        helmExec("inspect values "+ path, printer)
-    })
+    let uri = vscode.Uri.parse("helm-inspect-values://" + u.fsPath)
+    vscode.commands.executeCommand("vscode.previewHtml", uri, vscode.ViewColumn.Two, "Inspect")
 }
 
 // helmDryRun runs a helm install with --dry-run and --debug set.
