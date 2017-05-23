@@ -58,51 +58,34 @@ export class HelmTemplatePreviewDocumentProvider implements vscode.TextDocumentC
 
     public provideTextDocumentContent(uri: vscode.Uri, tok: vscode.CancellationToken): vscode.ProviderResult<string> {
         return new Promise<string>((resolve, reject) => {
-            let editor = vscode.window.activeTextEditor
-            if (!editor) {
-                // Substitute an empty doc. This basically happens when switching back and forth between non-editor
-                // windows, especially when there are multiple preview windows open.
-                resolve(previewBody(exec.loadChartMetadata(uri.fsPath).name, "no file selected"))
-                return
-            }
+            // The URI is the encapsulated path to the template to render.
+            let tpl = uri.fsPath
 
-            let filePath = editor.document.fileName
-            let chartPath = uri.fsPath
-            let prevWin = this
-            let reltpl = filepath.relative(filepath.dirname(chartPath), filePath)
+            // First, we need to get the top-most chart:
+            exec.pickChartForFile(tpl, chartPath => {
+                // We need the relative path for 'helm template'
+                let reltpl = filepath.relative(filepath.dirname(chartPath), tpl)
+                exec.helmExec("template " + chartPath + " --execute " + reltpl, (code, out, err) => {
+                    if (code != 0) {
+                        resolve(previewBody("Chart Preview", "Failed template call." + err, true))
+                        return
+                    }
 
-
-            if (reltpl.indexOf("templates") < 0) {
-                // No reason to send this through the template renderer.
-                //resolve(editor.document.getText())
-                resolve(previewBody(exec.loadChartMetadata(uri.fsPath).name, "no template  selected"))
-                return
-            }
-
-            console.log("templating " + reltpl)
-            exec.helmExec("template " + chartPath + " --execute " + reltpl, (code, out, err) => {
-                if (code != 0) {
-                    resolve(previewBody("Chart Preview", "Failed template call." + err, true))
-                    return
-                }
-
-                if (filepath.basename(reltpl) == "NOTES.txt") {
-                    // NOTES.txt is not a YAML doc.
+                    if (filepath.basename(reltpl) != "NOTES.txt") {
+                        var res
+                        try {
+                            res = YAML.parse(out)
+                        } catch (e) {
+                            // TODO: Figure out the best way to display this message, but have it go away when the
+                            // file parses correctly.
+                            //resolve(previewBody("Chart Preview", "Invalid YAML: " + err.message, true))
+                            vscode.window.showErrorMessage(`YAML failed to parse: ${ e.message }`)
+                        }
+                    }
+                    
                     resolve(previewBody(reltpl, out))
-                    return
-                }
-                var res
-                try {
-                    res = YAML.parse(out)
-                } catch (e) {
-                    // TODO: Figure out the best way to display this message, but have it go away when the
-                    // file parses correctly.
-                    //resolve(previewBody("Chart Preview", "Invalid YAML: " + err.message, true))
-                    vscode.window.showErrorMessage(`YAML failed to parse: ${ e.message }`)
-                }
-                resolve(previewBody(reltpl, out))
+                })
             })
-            return
         })
         
     }

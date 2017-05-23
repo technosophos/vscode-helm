@@ -76,20 +76,17 @@ export function activate(context: vscode.ExtensionContext) {
         if (e === vscode.window.activeTextEditor.document) {
             let doc = vscode.window.activeTextEditor.document
             if (doc.uri.scheme != "file") {
+                logger.log("Skipping non-file")
                 return
             }
-
-            exec.pickChartForFile(vscode.window.activeTextEditor.document.fileName, chartPath => {
-                let u = vscode.Uri.parse(HELM_PREVIEW_SCHEME + "://" + chartPath);
-                previewProvider.update(u);
-            })
-            
+            let u = vscode.Uri.parse(HELM_PREVIEW_SCHEME + "://" + doc.uri.fsPath);
+            previewProvider.update(u)
         }
 	});
     // On editor change, refresh the YAML preview
     vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor) => {
         if (!editorIsActive()) {
-            //logger.log("No active editor")
+            logger.log("No active editor")
             return
         }
         if (e.document === vscode.window.activeTextEditor.document) {
@@ -97,10 +94,8 @@ export function activate(context: vscode.ExtensionContext) {
             if (doc.uri.scheme != "file") {
                 return
             }
-            exec.pickChartForFile(vscode.window.activeTextEditor.document.fileName, chartPath => {
-                let u = vscode.Uri.parse(HELM_PREVIEW_SCHEME + "://" + chartPath);
-                previewProvider.update(u);
-            })
+            let u = vscode.Uri.parse(HELM_PREVIEW_SCHEME + "://" + doc.uri.fsPath);
+            previewProvider.update(u)
 		}
     })
 

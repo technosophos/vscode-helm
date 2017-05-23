@@ -47,13 +47,10 @@ export function helmTemplatePreview() {
         vscode.window.showInformationMessage("Not a template: " +filePath)
         return
     }
-    pickChartForFile(filePath, path => {
-        let reltpl = filepath.relative(path, filePath)
-        let u = vscode.Uri.parse("helm-template-preview://" + path)
-        let chart = loadChartMetadata(path)
-        vscode.commands.executeCommand("vscode.previewHtml", u, vscode.ViewColumn.Two, `${ chart.name } ${ chart.version }`)
-    })
 
+    let u = vscode.Uri.parse("helm-template-preview://" + filePath)
+    let f = filepath.basename(filePath)
+    vscode.commands.executeCommand("vscode.previewHtml", u, vscode.ViewColumn.Two, `Preview ${ f }`)
 }
 
 export function helmDepUp() {
@@ -195,12 +192,6 @@ export function pickChartForFile(file: string, fn) {
                     fn(filepath.join(vscode.workspace.rootPath, paths[0]))
                     return
                 }
-
-                /*
-                vscode.window.showQuickPick(paths).then( picked => {
-                    fn(filepath.join(vscode.workspace.rootPath, picked))
-                })
-                */
                 return
         }
     })
