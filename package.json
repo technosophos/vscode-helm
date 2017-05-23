@@ -2,11 +2,14 @@
     "name": "vscode-helm",
     "displayName": "vscode-helm",
     "description": "Chart development tools for Kubernetes Helm",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "technosophos",
+    "icon": "images/helm_icon.png",
     "engines": {
         "vscode": "^1.11.0"
     },
+    "license": "MIT",
+    "repository": "https://github.com/technosophos/vscode-helm.git",
     "categories": [
         "Languages",
         "Snippets",
