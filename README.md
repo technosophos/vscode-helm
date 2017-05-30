@@ -20,6 +20,14 @@ This Visual Studio Code extension provides [Kubernetes Helm](http://helm.sh) cha
 - Code lenses for:
   - requirements.yaml (Add and update dependencies)
 
+  ### Experimental Draft Support
+
+  Draft is a tool for rapidly creating cloud native applications. Behind the scenes, it use Helm to manage its resources. This extension provides Draft support:
+
+  - Commands for...
+    - **Draft: Create**: Ceate a new project with Draft
+    - **Draft: Up**: Deploy your current application straight out of VS Code
+
 ## Requirements
 
 You must have [Helm](http://helm.sh) installed and configured. From there, you should install `helm-template`:

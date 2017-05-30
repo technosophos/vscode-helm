@@ -2,7 +2,7 @@
     "name": "vscode-helm",
     "displayName": "vscode-helm",
     "description": "Chart development tools for Kubernetes Helm",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "technosophos",
     "icon": "images/helm_icon.png",
     "engines": {
@@ -65,6 +65,21 @@
                 "command": "extension.helmInspectValues",
                 "title": "Inspect Chart",
                 "description": "Inspect a Helm Chart"
+            },
+            {
+                "command": "extension.draftVersion",
+                "title": "Draft: Version",
+                "description": "Get the version of the local Draft client."
+            },
+            {
+                "command": "extension.draftUp",
+                "title": "Draft: Up",
+                "description": "Build, Deploy, and Run the app in-cluster."
+            },
+            {
+                "command": "extension.draftCreate",
+                "title": "Draft: Create",
+                "description": "Create a new Draft project"
             }
         ],
         "menus": {
@@ -82,17 +97,27 @@
                 }
             ]
         },
-        "languages": [{
-            "id": "helm",
-            "aliases": ["helm-template", "helm"],
-            "extensions": [".yaml",".tpl"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "helm",
-            "scopeName": "source.helm",
-            "path": "./syntaxes/helm.tmLanguage.json"
-        }],
+        "languages": [
+            {
+                "id": "helm",
+                "aliases": [
+                    "helm-template",
+                    "helm"
+                ],
+                "extensions": [
+                    ".yaml",
+                    ".tpl"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "helm",
+                "scopeName": "source.helm",
+                "path": "./syntaxes/helm.tmLanguage.json"
+            }
+        ],
         "snippets": [
             {
                 "language": "helm",
@@ -114,8 +139,8 @@
         "@types/mocha": "^2.2.32"
     },
     "dependencies": {
-        "shelljs":"0.7.7",
-        "yamljs":"0.2.10",
-        "lodash":">3"
+        "shelljs": "0.7.7",
+        "yamljs": "0.2.10",
+        "lodash": ">3"
     }
 }

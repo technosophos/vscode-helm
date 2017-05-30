@@ -23,6 +23,48 @@ export class FuncMap {
 `),
         ]
     }
+    public releaseVals(): vscode.CompletionItem[] {
+        return [ 
+            this.v("Name", ".Release.Name", "Name of the release"),
+            this.v("Time", ".Release.Time", "Time of the release"),
+            this.v("Namespace", ".Release.Namespace", "Default namespace of the release"),
+            this.v("ServiceName", ".Release.Service", "Name of the service that produced the release (almost always Tiller)"),
+            this.v("IsUpgrade", ".Release.IsUpgrade", "True if this is an upgrade operation"),
+            this.v("IsInstall", ".Release.IsInstall", "True if this is an install operation"),
+            this.v("Revision", ".Release.Revision", "Release revision number (starts at 1)"),
+        ]
+    }
+
+    public filesVals(): vscode.CompletionItem[] {
+        return [
+            this.f("Get", ".Files.Get $path", "Get file contents. Path is relative to chart."),
+            this.f("GetBytes", ".Files.GetBytes $path", "Get file contents as a byte array. Path is relative to chart.")
+        ]
+    }
+
+    public capabilitiesVals(): vscode.CompletionItem[] {
+        return [
+            this.v("KubeVersion", ".Capabilities.KubeVersion", "Kubernetes version"),
+            this.v("TillerVersion", ".Capabilities.TillerVersion", "Tiller version"),
+            this.f("ApiVersions.Has", `.Capabilities.ApiVersions.Has "batch/v1"`, "Returns true if the given Kubernetes API/version is present on the cluster")
+        ]
+    }
+
+    public chartVals(): vscode.CompletionItem[] {
+        return [
+            this.v("Name", ".Chart.Name", "Name of the chart"),
+            this.v("Version", ".Chart.Version", "Version of the chart"),
+            this.v("Description", ".Chart.Description", "Chart description"),
+            this.v("Keywords", ".Chart.Keywords", "A list of keywords (as strings)"),
+            this.v("Home", ".Chart.Home", "The chart homepage URL"),
+            this.v("Sources", ".Chart.Sources", "A list of chart download URLs"),
+            this.v("Maintainers", ".Chart.Maintainers", "list of maintainer objects"),
+            this.v("Icon", ".Chart.Icon", "The URL to the chart's icon file"),
+            this.v("AppVersion", ".Chart.AppVersion", "The version of the main app contained in this chart"),
+            this.v("Deprecated", ".Chart.Deprecated", "If true, this chart is no longer maintained"),
+            this.v("TillerVersion", ".Chart.TillerVersion", "The version (range) if Tiller that this chart can run on."),
+        ]
+    }
 
     public helmFuncs(): vscode.CompletionItem[] {
         return [
@@ -190,14 +232,14 @@ export class FuncMap {
         ]
     }
 
-    f(name: string, args: string, doc: string): vscode.CompletionItem {
+    public f(name: string, args: string, doc: string): vscode.CompletionItem {
         let i = new vscode.CompletionItem(name, vscode.CompletionItemKind.Function)
         i.detail = args
         i.documentation = doc
         return i
     }
 
-    v(name: string, use: string, doc: string): vscode.CompletionItem {
+    public v(name: string, use: string, doc: string): vscode.CompletionItem {
         let i = new vscode.CompletionItem(name, vscode.CompletionItemKind.Constant)
         i.detail = use
         i.documentation = doc
