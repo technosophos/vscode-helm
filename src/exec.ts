@@ -66,6 +66,20 @@ export function helmDepUp() {
     })
 }
 
+export function helmCreate() {
+    vscode.window.showInputBox({
+        prompt: "chart name",
+        placeHolder: "mychart"
+    }).then(name => {
+        let fullpath = filepath.join(vscode.workspace.rootPath, name)
+        helmExec("create " + fullpath, (code, out, err) => {
+            if (code != 0) {
+                vscode.window.showErrorMessage(err)
+            }
+        })
+    })
+}
+
 // helmLint runs the Helm linter on a chart within your project.
 export function helmLint() {
     pickChart(path => {
@@ -266,11 +280,12 @@ export function searchForChart(name: string, version?: string): Requirement {
     let repos = YAML.load(reposFile)
     var req
     repos.repositories.forEach(repo => {
-        logger.log("repo: " + repo.name)
+        //logger.log("repo: " + repo.name)
         if (repo.name == parts[0]) {
-            let cache = YAML.load(filepath.join(hh, "repository", "cache", repo.cache))
+            //let cache = YAML.load(filepath.join(hh, "repository", "cache", repo.cache))
+            let cache = YAML.load(repo.cache)
             _.each(cache.entries, (releases, name) => {
-                logger.log("entry: " + name)
+                //logger.log("entry: " + name)
                 if (name == parts[1]) {
                     req = new Requirement()
                     req.repository = repo.url

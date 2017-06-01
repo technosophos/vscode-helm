@@ -32,7 +32,7 @@ export function draftCreate() {
 
     vscode.window.showInputBox({prompt: "Project Name", placeHolder: "helloWorld"}).then(name => {
         selectPack(pack => {
-            let cmd = "create -p " + pack + " -a " + name + " -o " + vscode.workspace.rootPath
+            let cmd = "create -p " + pack + " -a " + name + " " + vscode.workspace.rootPath
             draftExec(cmd, (code, out, err) => {
                 if (code != 0) {
                     vscode.window.showErrorMessage(err)
@@ -50,7 +50,7 @@ export function draftUp() {
         vscode.window.showErrorMessage("Install Draft on your executable path")
         return
     }
-    let cmd = "draft up -s " + vscode.workspace.rootPath
+    let cmd = "draft up " + vscode.workspace.rootPath
     let proc = shell.exec(cmd, { async:true }, (code) => {
         if (code != 0) {
             logger.log("ERROR: draft up exited with code " + code)

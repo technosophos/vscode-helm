@@ -49,9 +49,9 @@ export class HelmTemplateCompletionProvider implements vscode.CompletionItemProv
         let line = doc.lineAt(pos.line).text
         let lineUntil = line.substr(0, wordPos.start.character)
 
-        logger.log(lineUntil)
+        //logger.log(lineUntil)
         if (lineUntil.endsWith(".")) {
-            logger.log("sending to dotCompletionItems ")
+            //logger.log("sending to dotCompletionItems ")
             return this.dotCompletionItems(doc, pos, word, lineUntil)
         }
 
@@ -82,7 +82,7 @@ export class HelmTemplateCompletionProvider implements vscode.CompletionItemProv
 
         } else {
             
-            logger.log("in else block")
+            //logger.log("in else block")
             let res
             try {
                 res = this.valuesMatcher.exec(lineUntil)
@@ -91,57 +91,34 @@ export class HelmTemplateCompletionProvider implements vscode.CompletionItemProv
             }
             
             if (!res || res.length == 0) {
-                logger.log("no matches for line " + lineUntil)
+                //logger.log("no matches for line " + lineUntil)
                 return []
             }
-            logger.log("Match: " + res[0] + " ("+res[1]+" matches)")
-            let parts = res[1].substr(1).split(".")
-            if (!res[1]) {
+            //logger.log("Match: " + res[0] + " ('"+res[1]+"' matches)")
+            if (res[1].length == 0 ) {
+                //logger.log("Empty: " + res[1])
                 return []
             }
 
+            //let parts = res[1].substr(1).split(".")
+            let parts = res[1].split(".")
             let words = []
-            parts.forEach(part => {
-                // Get the map for that part
-            });
-            /*
-            let doc = vscode.window.activeTextEditor.document
-            exec.pickChartForFile(doc.fileName, f => {
-                let valsYaml = path.join(f, "values.yaml")
-                var vals
-                try {
-                    vals = YAML.load(valsYaml)
-                } catch (err) {
-                    logger.log(err.message)
+            var cache = this.valuesCache
+            for (var i = 0; i < parts.length; ++i) {
+                let cur = parts[i]
+                if (!cache[cur]) {
+                    //logger.log("Found no matches at " + cur)
                     return []
                 }
-                var target = vals
-                
-                for (var i = 0; i < parts.length; i++) {
-                    let key = parts[i]
-                    if (target[key]) {
-                        target = target[key]
-                    } else if (key == "") {
-                        continue
-                    } else {
-                        // Not found
-                        return []
-                    }
-                }
-
-                let res = []
-                let v = this.v
-                _.forEach(target, (key, val) => {
-                    res.push(v(key, res[1], "values.yaml: " + val))
-                })
-                return res
-            })
-            */
-            return []
-            
-
+                cache = cache[cur]
+            }
+            if (!cache) {
+                //logger.log("Found no matches for " + res[1])
+                return []
+            }
+            //logger.log("Found " + cache.length + " matches")
+            return _.keys(cache)
         }
-        //return []
     }
     v(name: string, use: string, doc: string): vscode.CompletionItem {
         let i = new vscode.CompletionItem(name, vscode.CompletionItemKind.Constant)
