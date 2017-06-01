@@ -2,7 +2,7 @@
     "name": "vscode-helm",
     "displayName": "vscode-helm",
     "description": "Chart development tools for Kubernetes Helm",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "publisher": "technosophos",
     "icon": "images/helm_icon.png",
     "engines": {
