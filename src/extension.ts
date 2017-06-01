@@ -13,6 +13,8 @@ import { RequirementsCodeLenseProvider } from './requirementsCodeLense';
 import { HelmTemplatePreviewDocumentProvider, HelmInspectDocumentProvider } from './documentProvider';
 import { HelmTemplateCompletionProvider } from './completionProvider';
 
+import * as draft from "./draft";
+
 // Filters for different Helm file types.
 // TODO: Consistently apply these to the provders registered.
 export const HELM_MODE: vscode.DocumentFilter = { language: "helm", scheme: "file" }
@@ -52,6 +54,12 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('extension.helmDryRun', exec.helmDryRun),
         vscode.commands.registerCommand('extension.helmDepUp', exec.helmDepUp),
         vscode.commands.registerCommand('extension.helmInsertReq', exec.insertRequirement),
+        vscode.commands.registerCommand('extension.helmCreate', exec.helmCreate),
+
+        // EXPERIMENTAL draft support
+        vscode.commands.registerCommand('extension.draftVersion', draft.draftVersion),
+        vscode.commands.registerCommand('extension.draftCreate', draft.draftCreate),
+        vscode.commands.registerCommand('extension.draftUp', draft.draftUp),
 
         //vscode.commands.registerCommand("extension.showYamlPreview", showYamlPreview)
 
@@ -86,7 +94,7 @@ export function activate(context: vscode.ExtensionContext) {
     // On editor change, refresh the YAML preview
     vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor) => {
         if (!editorIsActive()) {
-            logger.log("No active editor")
+            //logger.log("No active editor")
             return
         }
         if (e.document === vscode.window.activeTextEditor.document) {
