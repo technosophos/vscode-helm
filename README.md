@@ -19,14 +19,17 @@ This Visual Studio Code extension provides [Kubernetes Helm](http://helm.sh) cha
   - **Helm: Dependency Update**: Update a chart's dependencies.
 - Code lenses for:
   - requirements.yaml (Add and update dependencies)
+- Right-click on a chart `.tgz` file, and choose `inspect chart` to preview all configurable chart values.
 
-  ### Experimental Draft Support
+To activate the commands, use `CTRL-SHIFT-P` and begin typing the command name. (On Mac, it's `CMD-SHIFT-P`).
 
-  Draft is a tool for rapidly creating cloud native applications. Behind the scenes, it use Helm to manage its resources. This extension provides Draft support:
+### Experimental Draft Support
 
-  - Commands for...
-    - **Draft: Create**: Ceate a new project with Draft
-    - **Draft: Up**: Deploy your current application straight out of VS Code
+Draft is a tool for rapidly creating cloud native applications. Behind the scenes, it use Helm to manage its resources. This extension provides Draft support:
+
+- Commands for...
+  - **Draft: Create**: Ceate a new project with Draft
+  - **Draft: Up**: Deploy your current application straight out of VS Code
 
 ## Requirements
 
@@ -36,7 +39,7 @@ You must have [Helm](http://helm.sh) installed and configured. From there, you s
 $ helm plugin install https://github.com/technosophos/helm-template
 ```
 
-It is recommended that you also install `kubectl`, though this extension does not directly use it yet.
+It is recommended that you also install `kubectl`, though this extension does not directly use it yet. When `kubectl` is installed, authentication and schema chaching is done automatically for you.
 
 To use **Helm: DryRun** you must have your Kubernetes cluster running Tiller, and `$KUBECONFIG` pointing to that cluster. 
 
@@ -54,3 +57,11 @@ To use **Helm: DryRun** you must have your Kubernetes cluster running Tiller, an
 ### 0.1.0
 
 Experimental build.
+
+### 0.2.0
+
+Initial support for Draft, and many bug fixes.
+
+### 0.3.0
+
+Improved support for Kubernetes schema hover tips and intellisense.

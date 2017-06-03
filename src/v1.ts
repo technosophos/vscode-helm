@@ -1,3 +1,5 @@
+// v1.ts provides minimal support for kinds if the Kubernetes schema files
+// have not been downloaded by kubectl.
 export default {
   "swaggerVersion": "1.2",
   "apiVersion": "v1",

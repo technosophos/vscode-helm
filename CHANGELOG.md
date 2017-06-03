@@ -1,7 +1,15 @@
 # Change Log
-All notable changes to the "vscode-helm" extension will be documented in this file.
+Changes to the vscode-helm project
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
+## 0.1.0
 - Initial release
+
+## 0.1.1
+- Bug fixes
+
+## 0.2.0
+- Add Draft support
+- Improve helm templating
+
+## 0.3.0
+- Build Kubernetes manifest hover text from the '.kube/schema' directory instead of hard-coded values. This will support TPRs, and will stay up-to-date automatically

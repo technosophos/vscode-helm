@@ -1,12 +1,45 @@
 import * as vscode from 'vscode';
 import * as v1 from './v1';
 import * as _ from 'lodash';
+import * as shell from 'shelljs';
+import * as filepath from 'path';
 
 // Resources describes Kubernetes resource keywords.
 export class Resources {
     public all(): vscode.CompletionItem[] {
-        //return this.metadata().concat(this.secret())
-        return this.v1()
+        let home = shell.env["HOME"]
+        let schemaDir = filepath.join(home, ".kube/schema")
+        if (!shell.test("-d", schemaDir)) {
+            // Return the default set.
+            return this.v1()
+        }
+        // Otherwise, try to dynamically build completion items from the
+        // entire schema.
+        let kversion = _.last(shell.ls(schemaDir))
+        console.log("Loading schema for version " + kversion)
+
+        // Inside of the schemaDir, there are some top-level copies of the schemata.
+        // Instead of walking the tree, we just parse those.  Note that kubectl loads
+        // schemata on demand, which means we won't have an exhaustive list, but we are
+        // more likely to get the ones that this user is actually using, including
+        // TPRs.
+        var res = []
+        let path = filepath.join(schemaDir, kversion)
+        shell.ls(path).forEach(item => {
+            let itemPath = filepath.join(path, item)
+            if (shell.test('-d', itemPath)) {
+                //console.log("Skipping " + itemPath)
+                return
+            }
+            let schema = JSON.parse(shell.cat(itemPath))
+            if (!schema.models) {
+                return
+            }
+            console.log("Adding schema " + itemPath)
+            res = res.concat(this.fromSchema(schema.models))
+        })
+        console.log("Attached " + res.length + " resource kinds")
+        return res
     }
 
     v1(): vscode.CompletionItem[] {
