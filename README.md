@@ -64,4 +64,8 @@ Initial support for Draft, and many bug fixes.
 
 ### 0.3.0
 
-Improved support for Kubernetes schema hover tips and intellisense.
+Improved support for Kubernetes schema hover tips. Added support for intellisense on `.Values` statements in templates.
+
+## TODO:
+
+- [ ] Add support for a '.vsc-values.yaml' that will merge with 'values.yaml'
