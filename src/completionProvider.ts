@@ -76,38 +76,48 @@ export class HelmTemplateCompletionProvider implements vscode.CompletionItemProv
             let keys = _.keys(this.valuesCache)
             let res = []
             keys.forEach(key => {
-                res.push(this.funcmap.v(key, ".Values."+key, "" + this.valuesCache[key]))
+                res.push(this.funcmap.v(key, ".Values."+key, "In values.yaml: " + this.valuesCache[key]))
             });
             return res
 
         } else {
-            
-            //logger.log("in else block")
+            // If we get here, we inspect the string to see if we are at some point in a
+            // .Values.SOMETHING. expansion. We recurse through the values file to see
+            // if there are any autocomplete options there.
             let res
             try {
                 res = this.valuesMatcher.exec(lineUntil)
             } catch (err) {
                 logger.log(err.message)
+                return []
             }
             
+            // If this does not match the valuesMatcher (Not a .Values.SOMETHING...) then
+            // we return right away.
             if (!res || res.length == 0) {
-                //logger.log("no matches for line " + lineUntil)
                 return []
             }
             //logger.log("Match: " + res[0] + " ('"+res[1]+"' matches)")
             if (res[1].length == 0 ) {
-                //logger.log("Empty: " + res[1])
+                // This is probably impossible. It would match '.Values.', but that is
+                // matched by a previous condition.
                 return []
             }
 
-            //let parts = res[1].substr(1).split(".")
+            // If we get here, we've got .Values.SOMETHING..., and we want to walk that
+            // tree to see what suggestions we can give based on the contents of the
+            // current values.yaml file.
             let parts = res[1].split(".")
             let words = []
             var cache = this.valuesCache
             for (var i = 0; i < parts.length; ++i) {
                 let cur = parts[i]
+                if (cur.length == 0) {
+                    // We hit the trailing dot.
+                    break
+                }
                 if (!cache[cur]) {
-                    //logger.log("Found no matches at " + cur)
+                    // The key does not exist. User has typed something not in values.yaml
                     return []
                 }
                 cache = cache[cur]
@@ -116,10 +126,15 @@ export class HelmTemplateCompletionProvider implements vscode.CompletionItemProv
                 //logger.log("Found no matches for " + res[1])
                 return []
             }
-            //logger.log("Found " + cache.length + " matches")
-            return _.keys(cache)
+            let k = []
+            _.keys(cache).forEach(item => {
+                // Build help text for each suggestion we found.
+                k.push(this.v(item, res[0] + item, "In values.yaml: " + cache[item]))
+            })
+            return k
         }
     }
+
     v(name: string, use: string, doc: string): vscode.CompletionItem {
         let i = new vscode.CompletionItem(name, vscode.CompletionItemKind.Constant)
         i.detail = use
