@@ -28,7 +28,7 @@ To activate the commands, use `CTRL-SHIFT-P` and begin typing the command name. 
 Draft is a tool for rapidly creating cloud native applications. Behind the scenes, it use Helm to manage its resources. This extension provides Draft support:
 
 - Commands for...
-  - **Draft: Create**: Ceate a new project with Draft
+  - **Draft: Create**: Create a new project with Draft
   - **Draft: Up**: Deploy your current application straight out of VS Code
 
 ## Requirements
