@@ -59,7 +59,12 @@ export class HelmTemplatePreviewDocumentProvider implements vscode.TextDocumentC
     public provideTextDocumentContent(uri: vscode.Uri, tok: vscode.CancellationToken): vscode.ProviderResult<string> {
         return new Promise<string>((resolve, reject) => {
             // The URI is the encapsulated path to the template to render.
-            let tpl = uri.fsPath
+            //let tpl = uri.fsPath
+            if (!vscode.window.activeTextEditor) {
+                logger.log("FIXME: no editor selected")
+                return
+            }
+            let tpl = vscode.window.activeTextEditor.document.fileName
 
             // First, we need to get the top-most chart:
             exec.pickChartForFile(tpl, chartPath => {

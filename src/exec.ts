@@ -6,6 +6,8 @@ import * as YAML from 'yamljs';
 import * as _ from 'lodash';
 import * as fs from "fs";
 
+export const HELM_PREVIEW_SCHEME = 'helm-template-preview'
+export const HELM_PREVIEW_URI = HELM_PREVIEW_SCHEME + '://preview'
 
 // This file contains utilities for executing command line tools, notably Helm.
 
@@ -48,7 +50,7 @@ export function helmTemplatePreview() {
         return
     }
 
-    let u = vscode.Uri.parse("helm-template-preview://" + filePath)
+    let u = vscode.Uri.parse(HELM_PREVIEW_URI)
     let f = filepath.basename(filePath)
     vscode.commands.executeCommand("vscode.previewHtml", u, vscode.ViewColumn.Two, `Preview ${ f }`)
 }

@@ -66,6 +66,8 @@ Initial support for Draft, and many bug fixes.
 
 Improved support for Kubernetes schema hover tips. Added support for intellisense on `.Values` statements in templates.
 
+The `Helm: Preview Template`  view has changed: It now opens only one preview window, and any active editor that is a template is displayed in that window.
+
 ## TODO:
 
 - [ ] Add support for a '.vsc-values.yaml' that will merge with 'values.yaml'
