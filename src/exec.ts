@@ -303,6 +303,5 @@ export function searchForChart(name: string, version?: string): Requirement {
 }
 
 export function helmHome(): string {
-    let h = process.env.HOME
-    return process.env["HELM_HOME"] || filepath.join(h, '.helm')
+    return process.env["HELM_HOME"] || filepath.join(process.env["HOME"] || process.env["USERPROFILE"], '.helm')
 }

@@ -7,7 +7,7 @@ import * as filepath from 'path';
 // Resources describes Kubernetes resource keywords.
 export class Resources {
     public all(): vscode.CompletionItem[] {
-        let home = shell.env["HOME"]
+        let home = shell.env["HOME"] || shell.env["USERPROFILE"]
         let schemaDir = filepath.join(home, ".kube/schema")
         if (!shell.test("-d", schemaDir)) {
             // Return the default set.
