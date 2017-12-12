@@ -33,7 +33,7 @@ export class HelmInspectDocumentProvider implements vscode.TextDocumentContentPr
                 exec.helmExec("inspect values " + file, printer)
                 return
             } else if (fi.isDirectory() && fs.existsSync(filepath.join(file, "Chart.yaml"))) {
-                exec.helmExec("inpsect values " + file, printer)
+                exec.helmExec("inspect values " + file, printer)
                 return
             }
             exec.pickChartForFile(file, path => {
