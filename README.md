@@ -3,6 +3,8 @@
 ## You should now use the [official Kubernetes Tools extension](https://github.com/Azure/vscode-kubernetes-tools).
 It has all of the features of this plugin, plus many more, and will be kept up-to-date.
 
+----
+
 This Visual Studio Code extension provides [Kubernetes Helm](http://helm.sh) chart developers with a set of tools for creating and testing charts.
 
 ![screenshot of Helm extension](./screenshot.png)
