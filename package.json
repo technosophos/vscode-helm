@@ -2,7 +2,7 @@
     "name": "vscode-helm",
     "displayName": "vscode-helm",
     "description": "Chart development tools for Kubernetes Helm",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "publisher": "technosophos",
     "icon": "images/helm_icon.png",
     "engines": {
@@ -23,6 +23,9 @@
         "onCommand:extension.helmVersion",
         "onCommand:extension.helmCreate",
         "onCommand:extension.draftVersion",
+        "onCommand:extension.draftCreate",
+        "onCommand:extension.draftCreateManual",
+        "onCommand:extension.draftUp",
         "onLanguage:helm"
     ],
     "main": "./out/src/extension",
@@ -87,6 +90,11 @@
                 "command": "extension.draftCreate",
                 "title": "Draft: Create",
                 "description": "Create a new Draft project"
+            },
+            {
+                "command": "extension.draftCreateManual",
+                "title": "Draft: Create (Select Pack)",
+                "description": "Create a new Draft project and select the pack"
             }
         ],
         "menus": {

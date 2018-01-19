@@ -31,8 +31,25 @@ export function draftCreate() {
     //shell.cd(vscode.workspace.rootPath)
 
     vscode.window.showInputBox({prompt: "Project Name", placeHolder: "helloWorld"}).then(name => {
+        let cmd = "create -a " + name + " " + vscode.workspace.rootPath
+        draftExec(cmd, (code, out, err) => {
+            if (code != 0) {
+                vscode.window.showErrorMessage(err)
+                return
+            }
+            vscode.window.showInformationMessage("Created " + name)
+        })
+    })
+}
+
+export function draftCreateManual() {
+    // This is a lame hack because draft does not take a path argument.
+    //shell.cd(vscode.workspace.rootPath)
+
+    vscode.window.showInputBox({prompt: "Project Name", placeHolder: "helloWorld"}).then(name => {
         selectPack(pack => {
             let cmd = "create -p " + pack + " -a " + name + " " + vscode.workspace.rootPath
+            console.log(cmd)
             draftExec(cmd, (code, out, err) => {
                 if (code != 0) {
                     vscode.window.showErrorMessage(err)

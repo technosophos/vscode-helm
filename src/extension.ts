@@ -59,6 +59,7 @@ export function activate(context: vscode.ExtensionContext) {
         // EXPERIMENTAL draft support
         vscode.commands.registerCommand('extension.draftVersion', draft.draftVersion),
         vscode.commands.registerCommand('extension.draftCreate', draft.draftCreate),
+        vscode.commands.registerCommand('extension.draftCreateManual', draft.draftCreateManual),
         vscode.commands.registerCommand('extension.draftUp', draft.draftUp),
 
         //vscode.commands.registerCommand("extension.showYamlPreview", showYamlPreview)
