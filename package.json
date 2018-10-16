@@ -1,8 +1,8 @@
 {
     "name": "vscode-helm",
     "displayName": "vscode-helm",
-    "description": "Chart development tools for Kubernetes Helm",
-    "version": "0.3.0",
+    "description": "Superseded by Kubernetes extension",
+    "version": "0.4.0",
     "publisher": "technosophos",
     "icon": "images/helm_icon.png",
     "engines": {
@@ -11,141 +11,20 @@
     "license": "MIT",
     "repository": "https://github.com/technosophos/vscode-helm.git",
     "categories": [
-        "Languages",
-        "Snippets",
         "Other"
     ],
-    "activationEvents": [
-        "onCommand:extension.helmTemplate",
-        "onCommand:extension.helmTemplatePreview",
-        "onCommand:extension.helmLint",
-        "onCommand:extension.helmDryRun",
-        "onCommand:extension.helmVersion",
-        "onCommand:extension.helmCreate",
-        "onCommand:extension.draftVersion",
-        "onCommand:extension.draftCreate",
-        "onCommand:extension.draftCreateManual",
-        "onCommand:extension.draftUp",
-        "onLanguage:helm"
-    ],
+    "activationEvents": [],
     "main": "./out/src/extension",
-    "contributes": {
-        "commands": [
-            {
-                "command": "extension.helmVersion",
-                "title": "Helm: Version (Client)",
-                "description": "Get the version of the local Helm client."
-            },
-            {
-                "command": "extension.helmLint",
-                "title": "Helm: Lint",
-                "description": "Run the linter on this chart."
-            },
-            {
-                "command": "extension.helmDepUp",
-                "title": "Helm: Dependency Update",
-                "description": "Update the dependencies listed in requirements.yaml."
-            },
-            {
-                "command": "extension.helmDryRun",
-                "title": "Helm: Dry Run",
-                "description": "Run 'helm install --dry-run --debug' on this chart."
-            },
-            {
-                "command": "extension.helmTemplate",
-                "title": "Helm: Template",
-                "description": "Run 'helm template' on this chart. Requires the helm-template plugin."
-            },
-            {
-                "command": "extension.helmInsertReq",
-                "title": "Helm: Insert Dependency",
-                "description": "Insert a dependency YAML fragment"
-            },
-            {
-                "command": "extension.helmTemplatePreview",
-                "title": "Helm: Preview Template",
-                "description": "Run 'helm template' on this chart and show only this file. Requires the helm-template plugin."
-            },
-            {
-                "command": "extension.helmInspectValues",
-                "title": "Inspect Chart",
-                "description": "Inspect a Helm Chart"
-            },
-            {
-                "command": "extension.helmCreate",
-                "title": "Helm: Create Chart",
-                "description": "Create a new Helm Chart"
-            },
-            {
-                "command": "extension.draftVersion",
-                "title": "Draft: Version",
-                "description": "Get the version of the local Draft client."
-            },
-            {
-                "command": "extension.draftUp",
-                "title": "Draft: Up",
-                "description": "Build, Deploy, and Run the app in-cluster."
-            },
-            {
-                "command": "extension.draftCreate",
-                "title": "Draft: Create",
-                "description": "Create a new Draft project"
-            },
-            {
-                "command": "extension.draftCreateManual",
-                "title": "Draft: Create (Select Pack)",
-                "description": "Create a new Draft project and select the pack"
-            }
-        ],
-        "menus": {
-            "explorer/context": [
-                {
-                    "title": "Update Dependencies",
-                    "when": "resourceFilename == requirements.yaml",
-                    "command": "extension.helmDepUp",
-                    "group": "navigation@99"
-                },
-                {
-                    "when": "",
-                    "command": "extension.helmInspectValues",
-                    "group": "navigation@98"
-                }
-            ]
-        },
-        "languages": [
-            {
-                "id": "helm",
-                "aliases": [
-                    "helm-template",
-                    "helm"
-                ],
-                "extensions": [
-                    ".yaml",
-                    ".tpl"
-                ],
-                "configuration": "./language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "helm",
-                "scopeName": "source.helm",
-                "path": "./syntaxes/helm.tmLanguage.json"
-            }
-        ],
-        "snippets": [
-            {
-                "language": "helm",
-                "path": "./snippets/helm.json"
-            }
-        ]
-    },
+    "contributes": {},
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"
     },
+    "extensionDependencies": [
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
+    ],
     "devDependencies": {
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",
